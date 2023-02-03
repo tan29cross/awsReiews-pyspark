@@ -1,0 +1,172 @@
+{
+    "AWSTemplateFormatVersion" : "2010-09-09",
+    "Description": "Stack for Placie Data & Analytics Data Pipeline",
+
+    "Parameters":{
+
+        "AWSGlueRole": {
+            "Type": "String",
+            "Default": "arn:aws:iam::371041748174:role/aws-glue-role",
+            "Description": "Role name for aws glue service"
+        },
+
+        "catalogID":{
+            "Type": "String",
+            "Default": "371041748174",
+            "Description": "Admin Account ID"
+        },
+
+        "s3BooksPath":{
+            "Type":"String",
+            "Default": "s3://amazon-reviews-pds/parquet/product_category=Books/*.parquet",
+            "Description": "Path extention for books reviews"
+
+        },
+
+        "s3MusicPath":{
+            "Type":"String",
+            "Default": "s3://amazon-reviews-pds/parquet/product_category=Music/*.parquet",
+            "Description": "Path extention for books reviews"
+
+        },
+
+        "s3outputPath":{
+            "Type":"String",
+            "Default": "s3://amazon-reviews-storage/part_2_1/",
+            "Description": "S3 Path extention for data storage"
+        },
+
+
+        "s3outputPathStg":{
+            "Type":"String",
+            "Default": "s3://amazon-reviews-storage/stg/",
+            "Description": "S3 Path extention to stage reviews data for common users between book and music products"
+        },
+
+
+
+        "jbName":{
+            "Type": "String",
+            "Default": "prd_amazon_get_common_users",
+            "Description": "jbName for part 2.1 transform ETL"
+        },
+
+
+        "scriptLoc":{
+            "Type": "String",
+            "Default": "s3://amazon-reviews-assets/psypark_script.py",
+            "Description": "Script path for the part2_1 job"
+        },
+
+        
+
+        "logPath":{
+            "Type": "String",
+            "Default": "s3://amazon-reviews-pyspark-logs/Logs/SparkUI/",
+            "Description": "Log directory for pyspark jobs"
+        },
+
+        "tempStoragePath": {
+            "Type": "String",
+            "Default": "s3://amazon-reviews-assets/temp/",
+            "Description": "temp directory for pyspark job"
+        },
+
+
+        "numBooksProducts":{
+            "Type": "Number",
+            "Default":  "4",
+            "Description": "Value to specify to get users who bought min number of book products"
+
+        },
+
+        "numMusicProducts":{
+            "Type": "Number",
+            "Default":  "5",
+            "Description": "Value to specify to get users who bought min number of music products"
+
+        }
+
+        
+
+
+    },
+
+    "Resources" : {
+
+
+        "jbPart21": {
+
+            "Type": "AWS::Glue::Job",
+            "DeletionPolicy": "Delete",
+            "Properties": {
+                "Command":{
+                    "Name": "glueetl",
+                    "ScriptLocation": {
+                        "Ref" : "scriptLoc"
+                    }
+                    },
+
+                "DefaultArguments":{
+                    "--job-bookmark-option": "job-bookmark-disable",
+                    "--enable-metrics": "true",
+                    "--enable-continuous-cloudwatch-log":"true",
+                    "--enable-spark-ui" : "true",
+                    "--spark-event-logs-path": {
+                        "Ref": "logPath"
+                    },
+                    "--outputPath": {
+                        "Ref" : "s3outputPath"
+                    },
+                    "--outputPath_stg": {
+                        "Ref" : "s3outputPathStg"
+                    },
+                    "--rootTable":"root",
+
+                    "--tempStorage":{
+                        "Ref" : "tempStoragePath"
+                    }, 
+                    "--s3BooksSourcePath" : {
+                        "Ref": "s3BooksPath"
+                    },
+
+                    "--s3MusicSourcePath" : {
+                        "Ref": "s3MusicPath"
+                    },
+
+                    "--num_books_products":{
+                        "Ref": "numBooksProducts"
+                    },
+
+                    "--num_music_products":{
+                        "Ref": "numMusicProducts"
+                    }
+                    
+                },
+
+                "Description": "PySpark Job to process to get common users who bought both books and music products",
+                "ExecutionProperty":{
+                        "MaxConcurrentRuns" : 2    
+                },
+                "GlueVersion" : "2.0",
+                "MaxRetries" : 0,
+                "Name": {
+                    "Ref":"jbName"
+                },
+
+                "NumberOfWorkers": 10, 
+                "Role" : {
+                    "Ref":"AWSGlueRole"    
+                },
+                "Timeout" : 2880,
+                "WorkerType": "G.1X"
+            }
+
+        }
+
+        
+
+    }
+    
+    
+}

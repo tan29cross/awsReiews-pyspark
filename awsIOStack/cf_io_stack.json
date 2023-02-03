@@ -1,0 +1,116 @@
+{
+    "AWSTemplateFormatVersion" : "2010-09-09",
+    "Description": "Cloudformation stack for creating input buckets, IAM roles",
+    "Parameters":{
+        "awsGlueRoleName": {
+            "Type": "String",
+            "Default": "aws-glue-role",
+            "Description": "Role name for aws glue services with full s3 access"
+        },
+
+        "s3StorageBucket":{
+            "Type": "String",
+            "Default": "amazon-reviews-storage",
+            "Description": "Bucket where parquet files will be staged/stored"
+        },
+
+        
+        "s3AssetBucket":{
+            "Type": "String",
+            "Default": "amazon-reviews-assets",
+            "Description": "Bucket project assets will be stored"
+        },
+
+        "s3LogBucket":{
+            "Type": "String",
+            "Default": "amazon-reviews-pyspark-logs",
+            "Description": "Bucket project assets will be stored"
+        }
+
+    },
+    "Resources" : {
+
+        "prdAWSGlueRole":{
+            "Type" : "AWS::IAM::Role",
+             "DeletionPolicy": "Delete",
+                "Properties" : {
+                    "AssumeRolePolicyDocument":{
+                        "Version":"2012-10-17",
+                        "Statement": [
+                            {
+                                "Effect": "Allow",
+                                "Principal": {
+                                    "Service": [
+                                        "glue.amazonaws.com", "lambda.amazonaws.com", "events.amazonaws.com"
+                                    ]
+                                },
+
+                                "Action": "sts:AssumeRole"
+                        
+                            }
+                        ]
+                    },
+
+                    "ManagedPolicyArns" : ["arn:aws:iam::aws:policy/AmazonS3FullAccess", "arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole", "arn:aws:iam::aws:policy/AWSStepFunctionsFullAccess","arn:aws:iam::aws:policy/AWSLambda_FullAccess"],
+                    "RoleName" : {
+                                "Ref": "awsGlueRoleName"
+                            }
+                }
+
+        },
+        
+        "s3BucketStg":{
+            "Type": "AWS::S3::Bucket",
+            "DeletionPolicy": "Delete",
+        
+            "Properties":{
+                "BucketName": {
+                    "Ref" : "s3StorageBucket"
+                },
+                "PublicAccessBlockConfiguration":{
+                    "BlockPublicAcls" : "True",
+                    "BlockPublicPolicy" : "True",
+                    "IgnorePublicAcls" : "True",
+                    "RestrictPublicBuckets" : "True"
+                }
+            }
+        },
+
+        "s3ProjectAssets":{
+            "Type": "AWS::S3::Bucket",
+            "DeletionPolicy": "Delete",
+        
+            "Properties":{
+                "BucketName": {
+                    "Ref" : "s3AssetBucket"
+                },
+                "PublicAccessBlockConfiguration":{
+                    "BlockPublicAcls" : "True",
+                    "BlockPublicPolicy" : "True",
+                    "IgnorePublicAcls" : "True",
+                    "RestrictPublicBuckets" : "True"
+                }
+            }
+        },
+
+        "s3ProjectLogs":{
+            "Type": "AWS::S3::Bucket",
+            "DeletionPolicy": "Delete",
+        
+            "Properties":{
+                "BucketName": {
+                    "Ref" : "s3LogBucket"
+                },
+                "PublicAccessBlockConfiguration":{
+                    "BlockPublicAcls" : "True",
+                    "BlockPublicPolicy" : "True",
+                    "IgnorePublicAcls" : "True",
+                    "RestrictPublicBuckets" : "True"
+                }
+            }
+        }
+    }
+
+    
+}
+  
