@@ -40,7 +40,7 @@
 
         "scriptLoc":{
             "Type": "String",
-            "Default": "s3://amazon-reviews-assets/Scripts/psypark_script_2_2.py",
+            "Default": "s3://amazon-reviews-assets/Scripts/pyspark_script_2_2.py",
             "Description": "Script path for the part2_2 job"
         },
 
