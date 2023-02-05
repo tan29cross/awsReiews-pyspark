@@ -41,7 +41,7 @@ def main():
         
         try: 
             response = s3.upload_file(
-                       Filename=FILE_PATH,
+                       Filename=file_dir,
                        Bucket=BUCKET_NAME,
                        Key='Scripts/'
              )
