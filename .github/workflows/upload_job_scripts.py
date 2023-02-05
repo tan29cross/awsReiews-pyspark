@@ -1,4 +1,5 @@
 import os
+import boto3
 
 def main():
   print("Hello from GitHub Actions!")
