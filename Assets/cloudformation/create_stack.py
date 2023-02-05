@@ -34,7 +34,7 @@ def main():
 
   print('boto3 session created......')
 
-  #getting list of py scripts to upload to s3
+
   
 
   #file_dir = os.path.join(FILE_PATH, file)
