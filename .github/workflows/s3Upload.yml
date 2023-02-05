@@ -1,4 +1,4 @@
-name: Upload Job Scripts
+name: Set up AWS env
 
 # Controls when the workflow will run
 on:
