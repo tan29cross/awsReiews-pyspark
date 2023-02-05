@@ -26,6 +26,16 @@ jobs:
       - name: Install botocore
         run: python -m pip install --upgrade pip botocore
       # Runs a single command using the runners shell
+      
+      - name: Create IO Stack
+        env:
+           AWS_ACCESS_ID: ${{ secrets.AWS_ACCESS_ID }}
+           AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
+           AWS_REGION: 'ap-southeast-2'
+           FILE_PATH: './Assets/cloudformation/cf_template_stackIO.json'
+           STACK_NAME: 'amazon-IO-stack'
+        run: python .github/workflows/create_stack.py
+
       - name: Upload Job Scripts to s3
         env:
            AWS_ACCESS_ID: ${{ secrets.AWS_ACCESS_ID }}
@@ -34,3 +44,5 @@ jobs:
            FILE_PATH: './Assets/Pyspark'
            BUCKET_NAME: 'amazon-reviews-assets'
         run: python .github/workflows/upload_job_scripts.py
+
+      

@@ -1,7 +1,7 @@
 import os
 import boto3
 import botocore
-from botocore.exceptions import ClientError
+#from botocore.exceptions import ClientError
 
 
 def main():
