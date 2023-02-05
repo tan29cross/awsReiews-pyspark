@@ -36,7 +36,7 @@ def main():
   for file in os.listdir(FILE_PATH):
       if file.endswith('.py'):
         file_dir = os.path.join(FILE_PATH, file)
-        print(f"Writing {file_dir} to bucket' : {BUCKET_NAME}")
+        print(f"Writing {file_dir} to bucket' ---> {BUCKET_NAME}")
        
         
         try: 
