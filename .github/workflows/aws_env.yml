@@ -3,20 +3,20 @@ name: Set up AWS env
 # Controls when the workflow will run
 on:
 
-  # Allows you to run this workflow manually from the Actions tab
+  # Allows to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+# This workflow contains various steps to setup cloudformation stacks to set up the AWS env
 jobs:
-  # This workflow contains a single job called "build"
+ 
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
+
     steps:
       - name: checkout repo content
-        uses: actions/checkout@v2 # checkout the repository content to github runner.
+        uses: actions/checkout@v2 
       - name: setup python
         uses: actions/setup-python@v2
         with:
@@ -27,6 +27,7 @@ jobs:
         run: python -m pip install --upgrade pip botocore
       # Runs a single command using the runners shell
       
+      #Stack for I/O s3 buckets, IAM, etc
       - name: Create IO Stack
         env:
            AWS_ACCESS_ID: ${{ secrets.AWS_ACCESS_ID }}
@@ -40,7 +41,7 @@ jobs:
         uses: jakejarvis/wait-action@master
         with:
           time: '60s'
-
+      #Uplopads the required job scripts 
       - name: Upload Job Scripts to s3
         env:
            AWS_ACCESS_ID: ${{ secrets.AWS_ACCESS_ID }}
@@ -49,7 +50,8 @@ jobs:
            FILE_PATH: './Assets/Pyspark'
            BUCKET_NAME: 'amazon-reviews-assets'
         run: python .github/workflows/upload_job_scripts.py
-
+      
+      #create stacks for part 2_1
       - name: Create Common Users Stack
         env:
            AWS_ACCESS_ID: ${{ secrets.AWS_ACCESS_ID }}
@@ -59,6 +61,7 @@ jobs:
            STACK_NAME: 'part-2-1-stack'
         run: python .github/workflows/create_stack.py
 
+      #create stacks for part 2_2
       - name: Create Neighbouring Users Stack
         env:
            AWS_ACCESS_ID: ${{ secrets.AWS_ACCESS_ID }}
@@ -68,6 +71,7 @@ jobs:
            STACK_NAME: 'part-2-2-stack'
         run: python .github/workflows/create_stack.py
 
+      #create stacks for part 2_3
       - name: Create Negative Users Stack
         env:
            AWS_ACCESS_ID: ${{ secrets.AWS_ACCESS_ID }}
