@@ -34,22 +34,19 @@ def main():
 
   #getting list of py scripts to upload to s3
   for file in os.listdir(FILE_PATH):
-      if file.endswith('.py'):
+    if file.endswith('.py'):
         file_dir = os.path.join(FILE_PATH, file)
         print(f"Writing {file_dir} to bucket' ---> {BUCKET_NAME}")
+   
        
-        
-        try: 
-            response = s3.upload_file(
+        response = s3.upload_file(
                        Filename=file_dir,
                        Bucket=BUCKET_NAME,
-                       Key='Scripts/'
+                       Key='Scripts/{}'.format(file)
              )
 
-        except botocore.exceptions.ClientError as error:
-    
-            raise error
-      else:
+        
+    else:
         print('No file found with extension .py.........')
 
 
