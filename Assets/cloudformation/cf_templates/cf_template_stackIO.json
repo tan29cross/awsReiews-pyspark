@@ -41,7 +41,7 @@
                                 "Effect": "Allow",
                                 "Principal": {
                                     "Service": [
-                                        "glue.amazonaws.com", "lambda.amazonaws.com", "events.amazonaws.com"
+                                        "glue.amazonaws.com", "lambda.amazonaws.com", "events.amazonaws.com","states.amazonaws.com"
                                     ]
                                 },
 
