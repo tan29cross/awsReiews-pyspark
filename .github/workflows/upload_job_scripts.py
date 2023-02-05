@@ -37,7 +37,7 @@ def main():
       if file.endswith('.py'):
         print(f"Writing {file} to bucket' : {BUCKET_NAME}")
         try: 
-            s3.Bucket(BUCKET_NAME).upload_file(file, "pyspark_scripts/")
+            s3.Bucket(BUCKET_NAME).upload_file(FILE_PATH + '/' + file, "pyspark_scripts/")
 
         except botocore.exceptions.ClientError as error:
     
