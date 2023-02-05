@@ -16,46 +16,32 @@
             "Description": "Admin Account ID"
         },
 
-        "s3BooksPath":{
+        "SourcePath":{
             "Type":"String",
-            "Default": "s3://amazon-reviews-pds/parquet/product_category=Books/*.parquet",
-            "Description": "Path extention for books reviews"
+            "Default": "s3://amazon-reviews-storage/part_2_2/*.parquet",
+            "Description": "s3 path for source data derive from part 2_2"
 
         },
 
-        "s3MusicPath":{
+        "s3OutputPath":{
             "Type":"String",
-            "Default": "s3://amazon-reviews-pds/parquet/product_category=Music/*.parquet",
-            "Description": "Path extention for books reviews"
+            "Default": "s3://amazon-reviews-storage/part_2_3/",
+            "Description": "s3 path to store part 2_3 results"
 
         },
-
-        "s3outputPath":{
-            "Type":"String",
-            "Default": "s3://amazon-reviews-storage/part_2_1/",
-            "Description": "S3 Path extention for data storage"
-        },
-
-
-        "s3outputPathStg":{
-            "Type":"String",
-            "Default": "s3://amazon-reviews-storage/stg/",
-            "Description": "S3 Path extention to stage reviews data for common users between book and music products"
-        },
-
 
 
         "jbName":{
             "Type": "String",
-            "Default": "prd_amazon_get_common_users",
-            "Description": "jbName for part 2.1 transform ETL"
+            "Default": "prd_amazon_get_users_pos_neg",
+            "Description": "jbName for part 2.3 transform ETL"
         },
 
 
         "scriptLoc":{
             "Type": "String",
-            "Default": "s3://amazon-reviews-assets/Scripts/pyspark_script_2_1.py",
-            "Description": "Script path for the part2_1 job"
+            "Default": "s3://amazon-reviews-assets/Scripts/psypark_script_2_3.py",
+            "Description": "Script path for the part 2_3 job"
         },
 
         
@@ -70,21 +56,6 @@
             "Type": "String",
             "Default": "s3://amazon-reviews-assets/temp/",
             "Description": "temp directory for pyspark job"
-        },
-
-
-        "numBooksProducts":{
-            "Type": "Number",
-            "Default":  "4",
-            "Description": "Value to specify to get users who bought min number of book products"
-
-        },
-
-        "numMusicProducts":{
-            "Type": "Number",
-            "Default":  "5",
-            "Description": "Value to specify to get users who bought min number of music products"
-
         }
 
         
@@ -95,7 +66,7 @@
     "Resources" : {
 
 
-        "jbPart21": {
+        "jbPart22": {
 
             "Type": "AWS::Glue::Job",
             "DeletionPolicy": "Delete",
@@ -116,35 +87,22 @@
                         "Ref": "logPath"
                     },
                     "--outputPath": {
-                        "Ref" : "s3outputPath"
+                        "Ref" : "s3OutputPath"
                     },
-                    "--outputPath_stg": {
-                        "Ref" : "s3outputPathStg"
-                    },
+                  
                     "--rootTable":"root",
 
                     "--tempStorage":{
                         "Ref" : "tempStoragePath"
-                    }, 
-                    "--s3BooksSourcePath" : {
-                        "Ref": "s3BooksPath"
                     },
+                    "--s3SourcePath":{
+                        "Ref":"SourcePath"
 
-                    "--s3MusicSourcePath" : {
-                        "Ref": "s3MusicPath"
-                    },
-
-                    "--num_books_products":{
-                        "Ref": "numBooksProducts"
-                    },
-
-                    "--num_music_products":{
-                        "Ref": "numMusicProducts"
                     }
                     
                 },
 
-                "Description": "PySpark Job to process to get common users who bought both books and music products",
+                "Description": "PySpark Job to get neighbour user ids who bought atleast one common product",
                 "ExecutionProperty":{
                         "MaxConcurrentRuns" : 2    
                 },
