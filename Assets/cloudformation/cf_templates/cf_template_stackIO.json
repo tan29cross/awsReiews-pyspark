@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion" : "2010-09-09",
-    "Description": "Cloudformation stack for creating input buckets, IAM roles",
+    "Description": "Cloudformation stack for creating input storage buckets, IAM roles",
     "Parameters":{
         "awsGlueRoleName": {
             "Type": "String",
