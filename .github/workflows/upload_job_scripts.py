@@ -44,14 +44,14 @@ def main():
         response = s3.upload_file(
                        Filename=file,
                        Bucket=BUCKET_NAME,
-                       Key='Scripts/{}'.format(file)
+                       Key='Scripts/{}'.format(file.split('/')[-1])
              )
     # state machine template
     elif file.endswith('.json'):
       response = s3.upload_file(
                        Filename=file,
                        Bucket=BUCKET_NAME,
-                       Key='StateMachine/{}'.format(file)
+                       Key='StateMachine/{}'.format(file.split('/')[-1])
              )
 
         
