@@ -35,9 +35,12 @@ def main():
   #getting list of py scripts to upload to s3
   for file in os.listdir(FILE_PATH):
       if file.endswith('.py'):
-        print(f"Writing {file} to bucket' : {BUCKET_NAME}")
+        file_dir = os.path.join(FILE_PATH, file)
+        print(f"Writing {file_dir} to bucket' : {BUCKET_NAME}")
+       
+        
         try: 
-            s3.Bucket(BUCKET_NAME).upload_file(FILE_PATH + '/' + file, "pyspark_scripts/")
+            s3.Bucket(BUCKET_NAME).upload_file(file_dir, "pyspark_scripts/")
 
         except botocore.exceptions.ClientError as error:
     
