@@ -1,0 +1,30 @@
+{
+    "Comment": "This machine runs 3 jobs in order",
+    "StartAt": "run_glue_job_part_2_1",
+    "States": {
+      "run_glue_job_part_2_1": {
+        "Type": "Task",
+        "Resource": "arn:aws:states:::glue:startJobRun.sync",
+        "Parameters": {
+          "JobName": "prd_amazon_get_common_users"
+        },
+        "Next": "run_glue_job_part_2_2"
+      },
+      "run_glue_job_part_2_2": {
+        "Type": "Task",
+        "Resource": "arn:aws:states:::glue:startJobRun.sync",
+        "Parameters": {
+          "JobName": "prd_amazon_get_users_neighbours"
+        },
+        "Next": "run_glue_job_part_2_3"
+      },
+      "run_glue_job_part_2_3": {
+        "Type": "Task",
+        "Resource": "arn:aws:states:::glue:startJobRun.sync",
+        "Parameters": {
+          "JobName": "prd_amazon_get_users_pos_neg"
+        },
+        "End": true
+      }
+    }
+  }

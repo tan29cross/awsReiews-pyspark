@@ -1,0 +1,58 @@
+{
+    "AWSTemplateFormatVersion" : "2010-09-09",
+    "Description": "Stack for Placie Data & Analytics Data Pipeline",
+
+    "Parameters":{
+
+        "AWSGlueRole": {
+            "Type": "String",
+            "Default": "arn:aws:iam::371041748174:role/aws-glue-role",
+            "Description": "Role name for aws glue service"
+        },
+
+      
+        "assetBucketName":{
+            "Type":"String",
+            "Default": "amazon-reviews-assets",
+            "Description": "bucket name where statemachine template is stored"
+
+        },
+
+        "stateMachineS3Location":{
+            "Type":"String",
+            "Default": "StateMachine/cf_template_state_machine.json",
+            "Description": "s3 path for state machine cf template"
+
+        }
+        
+
+
+    },
+
+    "Resources" : {
+
+
+        "opsDataStateMachine":{
+            "Type":"AWS::StepFunctions::StateMachine",
+            "DeletionPolicy": "Delete",
+            "Properties":{  
+                "StateMachineName":"etl_machine",
+                "StateMachineType":"STANDARD",
+                "DefinitionS3Location": {
+                    "Bucket" : {"Ref":"assetBucketName"},
+                    "Key" : {"Ref": "stateMachineS3Location"}
+                    
+                  },
+                "RoleArn": {
+                    "Ref":"AWSGlueRole"
+   
+                }
+             }
+        }
+
+        
+
+    }
+    
+    
+}
