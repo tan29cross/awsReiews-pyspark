@@ -28,7 +28,7 @@ def main():
     aws_secret_access_key=AWS_SECRET_KEY,
     region_name  = AWS_REGION)
     
-  s3 = session.resource('s3')
+  s3 =  session.client('s3')
 
   print('boto3 session created......')
 
@@ -40,7 +40,11 @@ def main():
        
         
         try: 
-            s3.Bucket(BUCKET_NAME).upload_file(file_dir, "pyspark_scripts/")
+            response = s3.upload_file(
+                       Filename=FILE_PATH,
+                       Bucket=BUCKET_NAME,
+                       Key='Scripts/'
+             )
 
         except botocore.exceptions.ClientError as error:
     
