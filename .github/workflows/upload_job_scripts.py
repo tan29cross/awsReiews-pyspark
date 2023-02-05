@@ -33,12 +33,13 @@ def main():
   #getting list of py scripts to upload to s3
   for file in os.listdir(FILE_PATH):
       if '.py' in file:
+        print(f"Writing {file} to bucket' : {BUCKET_NAME}")
         try: 
-            s3.Bucket(BUCKET_NAME).upload_file(file, "pyspark_scripts/")
+            s3.Bucket(BUCKET_NAME).upload_file(file, "pyspark_scripts/{}".format(file))
 
         except botocore.exceptions.ClientError as error:
     
-            raise RuntimeError("Uploading to s3 failed")
+            raise error
 
 
 if __name__ == '__main__':
