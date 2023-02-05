@@ -30,6 +30,8 @@ def main():
     
   s3 = session.resource('s3')
 
+  print('boto3 session created......')
+
   #getting list of py scripts to upload to s3
   for file in os.listdir(FILE_PATH):
       if file.endswith('.py'):
