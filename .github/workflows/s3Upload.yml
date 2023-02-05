@@ -36,6 +36,11 @@ jobs:
            STACK_NAME: 'amazon-IO-stack'
         run: python .github/workflows/create_stack.py
 
+      - name: Sleep for 60 seconds
+        uses: jakejarvis/wait-action@master
+        with:
+          time: '60s'
+
       - name: Upload Job Scripts to s3
         env:
            AWS_ACCESS_ID: ${{ secrets.AWS_ACCESS_ID }}
