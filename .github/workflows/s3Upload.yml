@@ -31,6 +31,6 @@ jobs:
            AWS_ACCESS_ID: ${{ secrets.AWS_ACCESS_ID }}
            AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
            AWS_REGION: 'ap-southeast-2'
-           FILE_PATH: './Part_2_1/'
+           FILE_PATH: './Assets/Pyspark'
            BUCKET_NAME: 'amazon-reviews-assets'
         run: python .github/workflows/upload_job_scripts.py
