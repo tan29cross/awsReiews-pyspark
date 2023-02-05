@@ -1,0 +1,130 @@
+{
+    "AWSTemplateFormatVersion" : "2010-09-09",
+    "Description": "Stack for Placie Data & Analytics Data Pipeline",
+
+    "Parameters":{
+
+        "AWSGlueRole": {
+            "Type": "String",
+            "Default": "arn:aws:iam::371041748174:role/aws-glue-role",
+            "Description": "Role name for aws glue service"
+        },
+
+        "catalogID":{
+            "Type": "String",
+            "Default": "371041748174",
+            "Description": "Admin Account ID"
+        },
+
+        "SourcePath":{
+            "Type":"String",
+            "Default": "s3://amazon-reviews-storage/stg/*.parquet",
+            "Description": "s3 path for source data derive from part 2_1"
+
+        },
+
+        "s3OutputPath":{
+            "Type":"String",
+            "Default": "s3://amazon-reviews-storage/part_2_2/",
+            "Description": "s3 path to store part 2_2 results"
+
+        },
+
+
+        "jbName":{
+            "Type": "String",
+            "Default": "prd_amazon_get_users_neighbours",
+            "Description": "jbName for part 2.2 transform ETL"
+        },
+
+
+        "scriptLoc":{
+            "Type": "String",
+            "Default": "s3://amazon-reviews-assets/psypark_script_2_2.py",
+            "Description": "Script path for the part2_2 job"
+        },
+
+        
+
+        "logPath":{
+            "Type": "String",
+            "Default": "s3://amazon-reviews-pyspark-logs/Logs/SparkUI/",
+            "Description": "Log directory for pyspark jobs"
+        },
+
+        "tempStoragePath": {
+            "Type": "String",
+            "Default": "s3://amazon-reviews-assets/temp/",
+            "Description": "temp directory for pyspark job"
+        }
+
+        
+
+
+    },
+
+    "Resources" : {
+
+
+        "jbPart22": {
+
+            "Type": "AWS::Glue::Job",
+            "DeletionPolicy": "Delete",
+            "Properties": {
+                "Command":{
+                    "Name": "glueetl",
+                    "ScriptLocation": {
+                        "Ref" : "scriptLoc"
+                    }
+                    },
+
+                "DefaultArguments":{
+                    "--job-bookmark-option": "job-bookmark-disable",
+                    "--enable-metrics": "true",
+                    "--enable-continuous-cloudwatch-log":"true",
+                    "--enable-spark-ui" : "true",
+                    "--spark-event-logs-path": {
+                        "Ref": "logPath"
+                    },
+                    "--outputPath": {
+                        "Ref" : "s3OutputPath"
+                    },
+                  
+                    "--rootTable":"root",
+
+                    "--tempStorage":{
+                        "Ref" : "tempStoragePath"
+                    },
+                    "--s3SourcePath":{
+                        "Ref":"SourcePath"
+
+                    }
+                    
+                },
+
+                "Description": "PySpark Job to get neighbour user ids who bought atleast one common product",
+                "ExecutionProperty":{
+                        "MaxConcurrentRuns" : 2    
+                },
+                "GlueVersion" : "2.0",
+                "MaxRetries" : 0,
+                "Name": {
+                    "Ref":"jbName"
+                },
+
+                "NumberOfWorkers": 10, 
+                "Role" : {
+                    "Ref":"AWSGlueRole"    
+                },
+                "Timeout" : 2880,
+                "WorkerType": "G.1X"
+            }
+
+        }
+
+        
+
+    }
+    
+    
+}
