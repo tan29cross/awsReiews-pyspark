@@ -89,7 +89,7 @@ jobs:
            AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
            AWS_REGION: 'ap-southeast-2'
            FILE_PATH: './Assets/cloudformation/cf_templates/cf_template_state_machine.json'
-           STACK_NAME: 'part-2-3-stack'
+           STACK_NAME: 'state-machine-stack'
         run: python .github/workflows/create_stack.py
 
 
