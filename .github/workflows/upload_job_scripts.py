@@ -33,13 +33,13 @@ def main():
   print('boto3 session created......')
 
   #file dir for pyspark scripts
-  file_dir_py = os.path.join(FILE_PATH, 'Pyspark')
+  file_dir_py = os.path.join(FILE_PATH, 'Pyspark/')
 
   #file dir for state machine
-  file_dir_sm = os.path.join(FILE_PATH, 'StateMachine')
+  file_dir_sm = os.path.join(FILE_PATH, 'StateMachine/')
 
   #getting list of py scripts to upload to s3
-  for file in os.listdir(file_dir_py):
+  for file in os.walk(file_dir_py):
     if file.endswith('.py'):
         file_dir = os.path.join(FILE_PATH, file)
         print(f"Writing {file_dir} to bucket' ---> {BUCKET_NAME}")
