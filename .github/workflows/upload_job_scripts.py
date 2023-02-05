@@ -31,43 +31,33 @@ def main():
   s3 =  session.client('s3')
 
   print('boto3 session created......')
-
-  #file dir for pyspark scripts
-  file_dir_py = os.path.join(FILE_PATH, 'Pyspark/')
-
-  #file dir for state machine
-  file_dir_sm = os.path.join(FILE_PATH, 'StateMachine/')
+  
+  files = [os.path.join(dirpath, file) for (dirpath, dirnames, filenames) in os.walk(FILE_PATH) for file in filenames ]
 
   #getting list of py scripts to upload to s3
-  for file in os.walk(file_dir_py):
+  for file in files:
     if file.endswith('.py'):
         file_dir = os.path.join(FILE_PATH, file)
         print(f"Writing {file_dir} to bucket' ---> {BUCKET_NAME}")
    
        
         response = s3.upload_file(
-                       Filename=file_dir_py,
+                       Filename=file,
                        Bucket=BUCKET_NAME,
                        Key='Scripts/{}'.format(file)
              )
-
-        
-    else:
-        print('No file found with extension .py.........')
-
-
-#uploading state machine template
-
-  print("uploading state machine template to s3 asset bucket")
-
-  response = s3.upload_file(
-                       Filename=file_dir_sm,
+    # state machine template
+    elif file.endswith('.json'):
+      response = s3.upload_file(
+                       Filename=file,
                        Bucket=BUCKET_NAME,
                        Key='StateMachine/{}'.format(file)
              )
 
+        
+    else:
+        print('No file found........directory does not contain suitable files to upload')
 
-    
 
 
 if __name__ == '__main__':
