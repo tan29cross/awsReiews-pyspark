@@ -4,6 +4,7 @@ import botocore
 #from botocore.exceptions import ClientError
 
 
+
 def main():
 
 
@@ -23,6 +24,7 @@ def main():
   
   else:
     print("All good! all env variables are set and good to go")
+
 
   #creating a boto3 session   
   session = boto3.Session (
