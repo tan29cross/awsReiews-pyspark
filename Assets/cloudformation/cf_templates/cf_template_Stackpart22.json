@@ -18,7 +18,7 @@
 
         "SourcePath":{
             "Type":"String",
-            "Default": "s3://amazon-reviews-storage/stg/*.parquet",
+            "Default": "s3://amazon-reviews-storage/part_2_1/*.parquet",
             "Description": "s3 path for source data derive from part 2_1"
 
         },
