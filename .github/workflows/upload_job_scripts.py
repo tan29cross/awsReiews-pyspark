@@ -32,7 +32,7 @@ def main():
 
   #getting list of py scripts to upload to s3
   for file in os.listdir(FILE_PATH):
-      if '.py' in file:
+      if file.endswith('.py'):
         print(f"Writing {file} to bucket' : {BUCKET_NAME}")
         try: 
             s3.Bucket(BUCKET_NAME).upload_file(file, "pyspark_scripts/{}".format(file))
@@ -40,6 +40,8 @@ def main():
         except botocore.exceptions.ClientError as error:
     
             raise error
+      else:
+        print('No file found with extension .py')
 
 
 if __name__ == '__main__':
