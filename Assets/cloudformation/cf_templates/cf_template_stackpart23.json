@@ -25,7 +25,7 @@
 
         "s3OutputPath":{
             "Type":"String",
-            "Default": "s3://amazon-reviews-storage/part_2_3/",
+            "Default": "s3a://amazon-reviews-storage/part_2_3/",
             "Description": "s3 path to store part 2_3 results"
 
         },

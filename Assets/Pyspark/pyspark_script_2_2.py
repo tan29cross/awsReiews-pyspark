@@ -38,15 +38,7 @@ if __name__ == "__main__":
     # Create a SparkConf object
     conf = SparkConf().setAppName("amazon_reviews_part_2_2")
 
-    ''''
-    --> Used the config below only for local mode, just for demo here. Defined no of workers and worker type in the job parameter for the glue job
-
-    conf.set("spark.executor.memory", "16")
-    conf.set("spark.driver.memory", "8g")
-    conf.set("spark.master", "local[4]")
-    conf.set("spark.executor.instances", "4")
-    conf.set('spark.executor.cores', '8')
-    '''
+    
 
     #Creating a spark context object using conf object ^
     sc = SparkContext(conf=conf)
@@ -75,6 +67,9 @@ if __name__ == "__main__":
 
     #reading data from s3 directory
     df_common_users = spark.read.schema(schema).parquet(glue_books_source_path)
+    
+    logger.info('total count....')
+    logger.info(df_common_users.count())
 
     #caching the source dataframe to be used later in other functions
     df_common_users.cache()
@@ -86,7 +81,7 @@ if __name__ == "__main__":
     Steps involved:
 
         1. Split dataframe into 2 halves i.e. books and music 
-        2. Create a union of these datasets, so hat we only have 2 columns i.e. customer_id & product_id 
+        2. Create a union of these datasets, so that we only have 2 columns i.e. customer_id & product_id 
         3. Do a self join on created dataframe in step 2 on product id to get users who have atleast one product in common
     
     '''
@@ -104,15 +99,19 @@ if __name__ == "__main__":
     
     #caching df 
     df_music_books_neighbour.cache()
+    
+    logger.info('total count after union....')
+    logger.info(df_music_books_neighbour.count())
 
     #removing from cache
-    df_music_neighbour.unpersist()
-    df_books_neighbour.unpersist()
+    #df_music_neighbour.unpersist()
+    #df_books_neighbour.unpersist()
 
     logger.info("Dataframe created with books and music data. Inititating self join................")
     
     #reducing the number of partitions from 200 to 48 reduce data shuffle 
-    df_music_books_neighbour_repartitioned = df_music_books_neighbour.coalesce(48)
+    df_music_books_neighbour_repartitioned = df_music_books_neighbour.coalesce(50)
+    df_music_books_neighbour_repartitioned.cache()
 
     #removing from cache
     df_music_books_neighbour.unpersist()
@@ -120,10 +119,14 @@ if __name__ == "__main__":
     #creating a replica of df for self join 
     df2=df_music_books_neighbour_repartitioned.select(F.col('customer_id').alias('neighbour_customer_id'),F.col('product_id').alias('neighbour_product_id') ).sort('neighbour_product_id')
 
-    df2 = df2.coalesce(48)
+    df2 = df2.coalesce(50)
 
     #creating a self-join 
     df_neighbour  = df_music_books_neighbour_repartitioned.alias('df1').join(df2, ((df_music_books_neighbour_repartitioned["product_id"] == df2["neighbour_product_id"]) & (df_music_books_neighbour["customer_id"] != df2["neighbour_customer_id"])), "inner" )
+    
+    # logging count of records to validate
+    logger.info("Total records after self join")
+    logger.info(df_neighbour.count())
 
     logger.info("Self-join operation completed. Inititating aggregate task................")
     
@@ -131,21 +134,23 @@ if __name__ == "__main__":
     #caching to be used later for aggregate operations
     df_neighbour.cache()
 
-    df_neighbour_repartitioned = df_neighbour.coalesce(48)
+    df_neighbour_repartitioned = df_neighbour.coalesce(50)
 
     # using collect_list function to create a list of neighbour user ids 
     df_neighbour_final = df_neighbour_repartitioned.groupby('customer_id').agg(F.collect_list('neighbour_customer_id').alias('neighbouring_user_ids'))
     df_neighbour_final.cache()
 
-    df_neighbour_final_repartitioned = df_neighbour_final.coalesce(48)
+    df_neighbour_final_repartitioned = df_neighbour_final.coalesce(50)
     df_neighbour_final.unpersist()
 
 
     logger.info("Started writing to s3 location")
+    logger.info("Total number of records to write")
+    logger.info(df_neighbour_final_repartitioned.count())
 
     
     #writing data to s3 directory 
-    df_neighbour_final_repartitioned.write.mode("overwrite").parquet('glue_output_s3_path')
+    df_neighbour_final_repartitioned.write.mode("overwrite").parquet(glue_output_s3_path)
 
     logger.info("Finished writing to s3 location")
 

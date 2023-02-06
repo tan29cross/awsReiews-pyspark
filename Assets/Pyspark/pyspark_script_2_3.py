@@ -79,39 +79,46 @@ if __name__ == "__main__":
 
     #reading data from s3 directory
     df_neighbours = spark.read.schema(schema).parquet(glue_books_source_path)
+    
 
 
     #caching the source dataframe to be used later in other functions
     df_neighbours.cache()
 
-    #creating a list of all user ids 
-    all_user_ids = df_neighbours.rdd.map(lambda row: row.customer_id).collect()
-
-    #creating an array of all user ids
-    all_ids_array = F.array(*[F.lit(x) for x in all_user_ids])
-
     ''''
-    In order to get an array of negative users, we will be using the array_except function here. The array_excpet function will take all_ids_array as first array 
-    and neighbouring_user_ids column as second array. This operation will return an array that will contain all users which can be considered as negative users
-    for  a given user
+    The following steps are involved in getting negative user_ids: 
+    1. Create a self-join with df_neighbours where customer_ids don't match. 
+    2. As a second step, it'd be required to filter out rows where the customer id from second dataframe is one of the neighbours of the customer id from the first datframe
+    3. A udf will be used to filter out such rows i.e. if the customer id that didn't match during self-join but is also a neighbour of a given customer-id 
+       will be filtered out. 
     '''
 
-    result = df_neighbours.withColumn("negative_id", F.array_except(all_ids_array, F.col("neighbouring_user_ids")))
+    #renaming columns to avoid duplication after self-join 
+    df_neighbours_renamed = df_neighbours.select(F.col('customer_id').alias('user_id'), F.col('neighbouring_user_ids').alias('positive_user_id'))
+
+    #creating a replica of the above df; to be used in self-join 
+    df2 = df_neighbours_renamed.select(F.col('user_id').alias('neg_user_id'), F.col('positive_user_id').alias('negative_user_id'))
+
+    #defining UDF to filter of neighbour user ids 
+    check_user = F.udf(lambda x , y : x in y)
+
+    
+    # join the dataframe with itself to get all negative user ids
+    df = df_neighbours_renamed.alias('df1').join(df2.alias('df2'), df_neighbours_renamed['user_id'] != df2['neg_user_id'],  'inner').filter(check_user("negative_user_id","positive_user_id") == False)
+
+    #exploding postive user id column
+    result = df.select('user_id', F.explode(F.col('positive_user_id')).alias(' positive_user_id'), F.col('neg_user_id').alias('negative_user_id') )
 
     result.cache() 
 
-    #since the above operation results in 2 array columns; an explode operation is required on both the columns to get the data in desired format
-
-    #exploding neighbouring_user_ids column
-    result =  result.select(F.col("customer_id").alias('user_id'), F.explode("neighbouring_user_ids").alias("positive_id"), "negative_id")
-
-    #exploding negative_id column
-    result =  result.select('user_id', "positive_id", F.explode("negative_id").alias("negative_id") )
 
     logger.info("Started writing to s3 location")
+    logger.info("Total records being written to s3")
+
+    logger.info(result.count())
 
     
     #writing data to s3 directory 
-    result.write.mode("overwrite").parquet('glue_output_s3_path')
+    result.write.mode("overwrite").parquet(glue_output_s3_path)
 
     logger.info("Finished writing to s3 location")

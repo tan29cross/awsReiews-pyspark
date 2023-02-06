@@ -162,7 +162,7 @@ if __name__ == "__main__":
 
 
      #writing to s3 
-    df_min_books_music.write.mode("overwrite").parquet(glue_output_s3_path)
+    df_common_users.write.mode("overwrite").parquet(glue_output_s3_stg_path)
 
 
     

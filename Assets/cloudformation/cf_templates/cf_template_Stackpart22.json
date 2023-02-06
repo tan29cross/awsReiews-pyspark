@@ -18,14 +18,14 @@
 
         "SourcePath":{
             "Type":"String",
-            "Default": "s3://amazon-reviews-storage/part_2_1/*.parquet",
+            "Default": "s3://amazon-reviews-storage/stg/*.parquet",
             "Description": "s3 path for source data derive from part 2_1"
 
         },
 
         "s3OutputPath":{
             "Type":"String",
-            "Default": "s3://amazon-reviews-storage/part_2_2/",
+            "Default": "s3a://amazon-reviews-storage/part_2_2/",
             "Description": "s3 path to store part 2_2 results"
 
         },

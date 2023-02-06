@@ -32,14 +32,14 @@
 
         "s3outputPath":{
             "Type":"String",
-            "Default": "s3://amazon-reviews-storage/part_2_1/",
+            "Default": "s3a://amazon-reviews-storage/part_2_1/",
             "Description": "S3 Path extention for data storage"
         },
 
 
         "s3outputPathStg":{
             "Type":"String",
-            "Default": "s3://amazon-reviews-storage/stg/",
+            "Default": "s3a://amazon-reviews-storage/stg/",
             "Description": "S3 Path extention to stage reviews data for common users between book and music products"
         },
 
