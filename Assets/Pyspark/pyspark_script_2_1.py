@@ -43,16 +43,6 @@ if __name__ == "__main__":
     # Create a SparkConf object
     conf = SparkConf().setAppName("amazon_reviews")
 
-    ''''
-    --> Used the config below only for local mode, just for demo here. Defined no of workers and worker type in the job parameter for the glue job
-
-    conf.set("spark.executor.memory", "16")
-    conf.set("spark.driver.memory", "8g")
-    conf.set("spark.master", "local[4]")
-    conf.set("spark.executor.instances", "4")
-    conf.set('spark.executor.cores', '8')
-    '''
-
     #Creating a spark context object using conf object ^
     sc = SparkContext(conf=conf)
 
@@ -126,8 +116,8 @@ if __name__ == "__main__":
     df_music_renamed = df_music_renamed.select(F.col('customer_id_music'), F.col('product_id_music')).distinct().sort('customer_id_music')
 
     '''
-      Given, the size of the dataframes and limitations in number of executors, memory in local mode, I have decided to apply shuffle based join instead of a broadcast join which 
-      will be more efficient with smaller datasets or with more memory
+      Given, the size of the dataframes and limitations in number of executors & memory in local mode, I have decided to apply shuffle based join instead of a broadcast join which 
+      will be more efficient with smaller datasets or with more memory.
     
     '''
     #joining the dataframes based on user id 
@@ -146,22 +136,22 @@ if __name__ == "__main__":
     logger.info('Initiating writing to s3.......')
     
     '''
-    writing the dataframe to output location in a parquet format, reducing number of partitions on dataframe; at this stage data has 200 partitions, I just want to create 10 files when writing to s3 bucket; avoids creating too many small files 
-    if requied to be processed later. Avoids small file problem in hadoop. 
+    writing the dataframe to output location in a parquet format, reducing number of partitions on dataframe; at this stage data has 200 partitions, I just want to create 10 files when writing to s3 bucket; 
+    avoids creating too many small files.
     
     '''
     #Using coalesce to avoid re-shuffle 
-    df_min_books_music = df_min_books_music.coalesce(8)
+    df_min_books_music = df_min_books_music.coalesce(10)
 
     #writing to s3 
     df_min_books_music.write.mode("overwrite").parquet(glue_output_s3_path)
 
 
     #writing common users non-grouped data to a stage folder to be used a source for next part 
-    df_common_users = df_common_users.coalesce(8)
+    df_common_users = df_common_users.coalesce(10)
 
 
-     #writing to s3 
+     #writing ungrouped data to s3 
     df_common_users.write.mode("overwrite").parquet(glue_output_s3_stg_path)
 
 

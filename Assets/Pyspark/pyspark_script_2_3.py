@@ -36,17 +36,8 @@ if __name__ == "__main__":
     dfc_root_table_name = args['rootTable']
 
     # Create a SparkConf object
-    conf = SparkConf().setAppName("amazon_reviews_part_2_2")
+    conf = SparkConf().setAppName("amazon_reviews_part_2_3")
 
-    ''''
-    --> Used the config below only for local mode, just for demo here. Defined no of workers and worker type in the job parameter for the glue job
-
-    conf.set("spark.executor.memory", "16")
-    conf.set("spark.driver.memory", "8g")
-    conf.set("spark.master", "local[4]")
-    conf.set("spark.executor.instances", "4")
-    conf.set('spark.executor.cores', '8')
-    '''
 
     #Creating a spark context object using conf object ^
     sc = SparkContext(conf=conf)
@@ -88,7 +79,7 @@ if __name__ == "__main__":
     ''''
     The following steps are involved in getting negative user_ids: 
     1. Create a self-join with df_neighbours where customer_ids don't match. 
-    2. As a second step, it'd be required to filter out rows where the customer id from second dataframe is one of the neighbours of the customer id from the first datframe
+    2. As a second step, it'd be required to filter out rows where the customer id (from second dataframe) is one of the neighbours of a given customer id (from the first datframe)
     3. A udf will be used to filter out such rows i.e. if the customer id that didn't match during self-join but is also a neighbour of a given customer-id 
        will be filtered out. 
     '''
@@ -114,8 +105,6 @@ if __name__ == "__main__":
 
     logger.info("Started writing to s3 location")
 
-
-    
     #writing data to s3 directory 
     result.write.mode("overwrite").parquet(glue_output_s3_path)
 

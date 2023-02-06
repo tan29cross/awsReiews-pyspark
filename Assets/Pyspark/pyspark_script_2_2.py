@@ -80,7 +80,7 @@ if __name__ == "__main__":
 
     Steps involved:
 
-        1. Split dataframe into 2 halves i.e. books and music 
+        1. Split dataframe into 2 halves i.e. containing books and music products each
         2. Create a union of these datasets, so that we only have 2 columns i.e. customer_id & product_id 
         3. Do a self join on created dataframe in step 2 on product id to get users who have atleast one product in common
     

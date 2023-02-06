@@ -1,18 +1,18 @@
 {
     "AWSTemplateFormatVersion" : "2010-09-09",
-    "Description": "Stack for Placie Data & Analytics Data Pipeline",
+    "Description": "Stack for Glue Jobs part 2_3",
 
     "Parameters":{
 
         "AWSGlueRole": {
             "Type": "String",
-            "Default": "arn:aws:iam::371041748174:role/aws-glue-role",
+            "Default": "arn:aws:iam::AWS_ACCOUNT_ID:role/aws-glue-role",
             "Description": "Role name for aws glue service"
         },
 
         "catalogID":{
             "Type": "String",
-            "Default": "371041748174",
+            "Default": "AWS_ACCOUNT_ID",
             "Description": "Admin Account ID"
         },
 
