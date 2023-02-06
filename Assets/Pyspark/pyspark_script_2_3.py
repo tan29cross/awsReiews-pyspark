@@ -38,16 +38,6 @@ if __name__ == "__main__":
     # Create a SparkConf object
     conf = SparkConf().setAppName("amazon_reviews_part_2_2")
 
-    ''''
-    --> Used the config below only for local mode, just for demo here. Defined no of workers and worker type in the job parameter for the glue job
-
-    conf.set("spark.executor.memory", "16")
-    conf.set("spark.driver.memory", "8g")
-    conf.set("spark.master", "local[4]")
-    conf.set("spark.executor.instances", "4")
-    conf.set('spark.executor.cores', '8')
-    '''
-
     #Creating a spark context object using conf object ^
     sc = SparkContext(conf=conf)
 
@@ -113,9 +103,7 @@ if __name__ == "__main__":
 
 
     logger.info("Started writing to s3 location")
-    logger.info("Total records being written to s3")
-
-    logger.info(result.count())
+  
 
     
     #writing data to s3 directory 
