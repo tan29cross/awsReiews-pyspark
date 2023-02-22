@@ -36,7 +36,7 @@ jobs:
            FILE_PATH: './Assets/cloudformation/cf_templates/cf_template_stackIO.json'
            STACK_NAME: 'amazon-IO-stack'
         run: python .github/workflows/create_stack.py
-
+     #waiting 60 seconds to wait for IO stack creation
       - name: Sleep for 60 seconds
         uses: jakejarvis/wait-action@master
         with:
